@@ -17,6 +17,7 @@ interface IFields {
 
 interface IState {
   data1: Array<IFields>; // store documents (records) after get method
+  data: IFields;
 }
 
 function ShowErrorWithNotify(error: any): void {
@@ -32,6 +33,7 @@ export const useHelyiseg = defineStore({
   id: "store1",
   state: (): IState => ({
     data1: [],
+    data: {},
   }),
   getters: {},
   actions: {
@@ -52,3 +54,4 @@ export const useHelyiseg = defineStore({
     },
   },
 });
+

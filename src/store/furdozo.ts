@@ -19,18 +19,68 @@ export interface IFurdozo {
   perc?: number;
   masodperc?: number;
 }
-
 interface IHelyiseg{
   _id?: number;
   helyiseg?: string;
   url?: string;
+}
+interface IPagination {
+  sortBy?: string;
+  descending?: false;
+  page?: number;
+  rowsPerPage?: number;
+  rowsNumber?: number;
+  filter?: string;
 }
 
 interface IState {
   furdoN: Array<IFurdozo>; // store documents (records) after get method(s)
   furdo: IFurdozo; // temporary object for create, edit and delete method
   furdoOld: IFurdozo; // temporary object for patch method (store furdo here before edit)
+  selected: Array<IFurdozo>;
+  isLoading: boolean;
+  pagination: IPagination;
 }
+
+export const useFurdozokStore = defineStore({
+  id: "FurdozokStore",
+  state: (): IState => ({
+    furdoN: [],
+    furdo: {},
+    furdoOld: {},
+    selected: [],
+    isLoading: false,
+    pagination: {
+      sortBy: "utca",
+      descending: false,
+      rowsPerPage: 10,
+      filter: "",
+    },
+  }),
+  getters: {},
+  actions: {
+    async getAll(): Promise<void> {
+      Loading.show();
+      this.furdoN = [];
+      $axios
+        .get("api/utcak")
+        .then((res) => {
+          Loading.hide();
+          if (res && res.data) {
+            this.furdoN = res.data;
+          }
+        })
+        .catch((error) => {
+          Loading.hide();
+          Notify.create({
+            message: `Error (${error.response.furdo.status}) while get all: ${error.response.furdo.message}`,
+            color: "negative",
+          });
+        });
+    },
+  }
+})
+
 
 function ShowErrorWithNotify(error: any): void {
   Loading.hide();
@@ -47,6 +97,14 @@ export const useFurdozo = defineStore({
     furdoN: [],
     furdo: {},
     furdoOld: {},
+    selected: [],
+    isLoading: false,
+    pagination: {
+      sortBy: "utca",
+      descending: false,
+      rowsPerPage: 10,
+      filter: "",
+    },
   }),
   getters: {},
   actions: {
